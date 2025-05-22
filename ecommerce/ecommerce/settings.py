@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -41,6 +42,8 @@ INSTALLED_APPS = [
 
     # Custom Apps
     'core',
+    'userauth',
+
 ]
 
 MIDDLEWARE = [
@@ -51,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'userauth.middleware.SessionTimeoutMiddleware',
 ]
 
 ROOT_URLCONF = 'ecommerce.urls'
@@ -119,10 +123,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'staticfiles')]
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 MEDIA_URL = '/media/'
 
@@ -131,3 +133,30 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+JAZZMIN_SETTINGS = {
+    "site_title": "DucThien Boutique",
+    "site_header": "DucThien Boutique",
+    "site_brand": "You order, we deliver",
+    "welcome_sign": "WELCOME TO ADMIN BOUTIQUE",
+    "copyright": "DucThien Boutique - since 2025",
+    "search_model": ["auth.User", "core.Product"],  # Tìm kiếm nhanh model
+}
+
+# Xác định backend xác thực custom
+AUTHENTICATION_BACKENDS = [
+    'userauth.backends.EmailBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+# Tùy chỉnh Model User
+AUTH_USER_MODEL = 'userauth.User'
+
+# Cài đặt session
+SESSION_COOKIE_AGE = 1209600  # 2 tuần (tính bằng giây)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_SAVE_EVERY_REQUEST = True
+
+# Cài đặt login redirect
+LOGIN_URL = 'userauth:signin'
+LOGIN_REDIRECT_URL = 'core:index'
